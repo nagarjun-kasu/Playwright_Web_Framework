@@ -1,0 +1,217 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: web\specs\login.spec.ts >> Login Page Tests >> Positive Tests >> should accept username description as optional field
+- Location: tests\web\specs\login.spec.ts:48:9
+
+# Error details
+
+```
+Error: expect(locator).toHaveText(expected) failed
+
+Locator:  locator('#loginMsg')
+Expected: "Login successful! Welcome, nagarjun."
+Received: ""
+Timeout:  10000ms
+
+Call log:
+  - Expect "toHaveText" with timeout 10000ms
+  - waiting for locator('#loginMsg')
+    14 × locator resolved to <div id="loginMsg"></div>
+       - unexpected value ""
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - heading "Automation Practice Hub" [level=1] [ref=e5]
+        - generic [ref=e6]:
+          - link "✉ nagarjun.sdet@gmail.com" [ref=e7] [cursor=pointer]:
+            - /url: mailto:nagarjun.sdet@gmail.com
+            - generic [ref=e8]: ✉
+            - text: nagarjun.sdet@gmail.com
+          - link "📞 +91 9030086420" [ref=e9] [cursor=pointer]:
+            - /url: tel:+919030086420
+            - generic [ref=e10]: 📞
+            - text: +91 9030086420
+      - list [ref=e11]:
+        - listitem [ref=e12]:
+          - link "🏠 Home" [ref=e13] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e14]: 🏠
+            - text: Home
+        - listitem [ref=e15]:
+          - link "🔒 Login" [ref=e16] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e17]: 🔒
+            - text: Login
+        - listitem [ref=e18]:
+          - link "📝 Register" [ref=e19] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e20]: 📝
+            - text: Register
+        - listitem [ref=e21]:
+          - link "☑ Checkboxes" [ref=e22] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e23]: ☑
+            - text: Checkboxes
+        - listitem [ref=e24]:
+          - link "📊 Webtables" [ref=e25] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e26]: 📊
+            - text: Webtables
+        - listitem [ref=e27]:
+          - link "🧮 Calculator" [ref=e28] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e29]: 🧮
+            - text: Calculator
+        - listitem [ref=e30]:
+          - link "🛒 KMart" [ref=e31] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e32]: 🛒
+            - text: KMart
+        - listitem [ref=e33]:
+          - link "🔽 Dropdowns" [ref=e34] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e35]: 🔽
+            - text: Dropdowns
+        - listitem [ref=e36]:
+          - link "📤 Upload" [ref=e37] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e38]: 📤
+            - text: Upload
+        - listitem [ref=e39]:
+          - link "⚡ Interactions" [ref=e40] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e41]: ⚡
+            - text: Interactions
+  - main [ref=e43]:
+    - generic [ref=e44]:
+      - heading "🔒 Login" [level=2] [ref=e45]:
+        - generic [ref=e46]: 🔒
+        - text: Login
+      - generic [ref=e47]:
+        - heading "🔑 Default Credentials" [level=4] [ref=e48]
+        - paragraph [ref=e49]:
+          - text: "Username:"
+          - code [ref=e50]: nagarjun
+        - paragraph [ref=e51]:
+          - text: "Password:"
+          - code [ref=e52]: Test@123
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: Username
+          - textbox "Username" [ref=e56]:
+            - /placeholder: Enter username
+            - text: Test@123
+        - generic [ref=e57]:
+          - generic [ref=e58]: Password
+          - textbox "Password" [active] [ref=e59]:
+            - /placeholder: Enter password
+        - generic [ref=e60]:
+          - generic [ref=e61]: Username Description
+          - textbox "Username Description" [ref=e62]:
+            - /placeholder: Description for username
+            - text: Admin user test
+        - button "Login" [ref=e63] [cursor=pointer]
+```
+
+# Test source
+
+```ts
+  1  | /**
+  2  |  * LoginPage — Page Object for the Login section
+  3  |  */
+  4  | 
+  5  | import { Page, Locator, expect } from '@playwright/test';
+  6  | import { BasePage } from './base.page';
+  7  | 
+  8  | export class LoginPage extends BasePage {
+  9  |   private readonly usernameInput: Locator;
+  10 |   private readonly passwordInput: Locator;
+  11 |   private readonly userDescInput: Locator;
+  12 |   private readonly loginButton: Locator;
+  13 |   private readonly messageBox: Locator;
+  14 |   private readonly credBox: Locator;
+  15 | 
+  16 |   constructor(page: Page) {
+  17 |     super(page);
+  18 |     this.usernameInput = page.getByRole("textbox", {name:"Username", exact:true});
+  19 |     this.passwordInput = page.getByRole("textbox", {name:"Username", exact:true}).filter({visible:true});
+  20 |     this.userDescInput = page.locator('#loginUserDesc');
+  21 |     this.loginButton = page.getByRole("button", {name:"Login"}).filter({visible:true});
+  22 |     this.messageBox = page.locator('#loginMsg');
+  23 |     this.credBox = page.locator('.cred-box');
+  24 |   }
+  25 | 
+  26 |   async open(): Promise<void> {
+  27 |     await this.goto();
+  28 |     await this.navigateTo('login');
+  29 |   }
+  30 | 
+  31 |   async fillUsername(username: string): Promise<void> {
+  32 |     await this.usernameInput.fill(username);
+  33 |   }
+  34 | 
+  35 |   async fillPassword(password: string): Promise<void> {
+  36 |     await this.passwordInput.fill(password);
+  37 |   }
+  38 | 
+  39 |   async fillUserDescription(description: string): Promise<void> {
+  40 |     await this.userDescInput.fill(description);
+  41 |   }
+  42 | 
+  43 |   async clickLogin(): Promise<void> {
+  44 |     await this.loginButton.click();
+  45 |   }
+  46 | 
+  47 |   async login(username: string, password: string): Promise<void> {
+  48 |     await this.fillUsername(username);
+  49 |     await this.fillPassword(password);
+  50 |     await this.clickLogin();
+  51 |   }
+  52 | 
+  53 |   async getMessageText(): Promise<string> {
+  54 |     return (await this.messageBox.textContent()) ?? '';
+  55 |   }
+  56 | 
+  57 |   async expectSuccessMessage(username: string): Promise<void> {
+> 58 |     await expect(this.messageBox).toHaveText(`Login successful! Welcome, ${username}.`);
+     |                                   ^ Error: expect(locator).toHaveText(expected) failed
+  59 |     await expect(this.messageBox).toHaveClass(/msg-success/);
+  60 |   }
+  61 | 
+  62 |   async expectErrorMessage(text: string): Promise<void> {
+  63 |     await expect(this.messageBox).toContainText(text);
+  64 |     await expect(this.messageBox).toHaveClass(/msg-error/);
+  65 |   }
+  66 | 
+  67 |   async expectCredentialHintVisible(): Promise<void> {
+  68 |     await expect(this.credBox).toBeVisible();
+  69 |   }
+  70 | 
+  71 |   async isUsernameRequired(): Promise<boolean> {
+  72 |     return (await this.usernameInput.getAttribute('required')) !== null;
+  73 |   }
+  74 | 
+  75 |   async isPasswordRequired(): Promise<boolean> {
+  76 |     return (await this.passwordInput.getAttribute('required')) !== null;
+  77 |   }
+  78 | 
+  79 |   async clearFields(): Promise<void> {
+  80 |     await this.usernameInput.clear();
+  81 |     await this.passwordInput.clear();
+  82 |     await this.userDescInput.clear();
+  83 |   }
+  84 | }
+```
