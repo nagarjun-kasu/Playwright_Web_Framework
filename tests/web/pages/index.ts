@@ -7,3 +7,5 @@ export { LoginPage } from './login.page';
 export { CheckboxesPage } from './checkboxes.page';
 export { DropdownsPage } from './dropdowns.page';
 export { UploadPage } from './upload.page';
+export { WebTablePage } from './webtable.page';
+export type { TableRecord } from './webtable.page';
