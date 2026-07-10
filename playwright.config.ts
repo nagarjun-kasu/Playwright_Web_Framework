@@ -38,6 +38,15 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
+// Load environment-specific .env file if available. Set TEST_ENV to one of: qa, uat, prod
+const targetEnv = process.env.TEST_ENV || 'qa';
+const dotenvPath = `.env.${targetEnv}`;
+  
+import dotenv from 'dotenv';
+dotenv.config({ path: dotenvPath });
+
+// Ensure BASE_URL is available to tests via process.env.BASE_URL — provide sensible fallback
+process.env.BASE_URL = process.env.BASE_URL ?? 'https://www.myntra.com/';
 
 export default defineConfig({
 
@@ -73,8 +82,8 @@ export default defineConfig({
 
   // ── Shared Settings for All Projects ──────────────────
   use: {
-    // Application under test
-    //baseURL: 'https://nagarjunreddykasu.github.io/web-automation-practice-site/',
+    // Application under test - picked from .env based on TEST_ENV
+    baseURL: process.env.BASE_URL,
 
     // Auto-waiting timeouts
     actionTimeout: 15_000,
@@ -98,6 +107,7 @@ export default defineConfig({
 
   // ── Browser Projects ──────────────────────────────────
   projects: [
+    /*
     {
       name: 'chromium',
       use: {
@@ -116,6 +126,7 @@ export default defineConfig({
         ...devices['Desktop Safari'],
       },
     },
+    */
     {
     name: 'Google Chrome',
      use: { 

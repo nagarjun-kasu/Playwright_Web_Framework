@@ -6,6 +6,7 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 export class LoginPage extends BasePage {
+  //Encapsulation
   private readonly usernameInput: Locator;
   private readonly passwordInput: Locator;
   private readonly userDescInput: Locator;

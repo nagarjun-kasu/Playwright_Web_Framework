@@ -5,16 +5,67 @@
  * waiting helpers) are available everywhere without duplication.
  */
 
-import { Page, expect } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 
-export const BASE_URL = 'https://nagarjunreddykasu.github.io/web-automation-practice-site/';
+export const BASE_URL = process.env.BASE_URL ?? 'https://nagarjunreddykasu.github.io/web-automation-practice-site/';
 
 export class BasePage {
   constructor(protected readonly page: Page) {}
 
+
   /** Navigate to the practice hub root */
   async goto(): Promise<void> {
     await this.page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
+  }
+
+  /** Navigate to a specific URL */
+  async navigateToUrl(url: string): Promise<void> {
+    await this.page.goto(url, { waitUntil: 'domcontentloaded' });
+  }
+
+  /** Click the target element */
+  async click(element: Locator): Promise<void> {
+    await element.click();
+  }
+
+  /** Fill the target input element */
+  async fill(element: Locator, value: string): Promise<void> {
+    await element.fill(value);
+  }
+
+  /// Hover over the target element
+  async hover(element: Locator): Promise<void> {
+    await element.hover();
+  }
+
+  /** Get the text content of the target element */
+  async getText(element: Locator): Promise<string> {
+    return (await element.textContent()) ?? '';
+  }
+
+  /** Get the input value of the target element */
+  async getValue(element: Locator): Promise<string> {
+    return await element.inputValue();
+  }
+
+  /** Get attribute value from the target element */
+  async getAttribute(element: Locator, name: string): Promise<string | null> {
+    return await element.getAttribute(name);
+  }
+
+  /** Determine if the target element is visible */
+  async isVisible(element: Locator): Promise<boolean> {
+    return await element.isVisible();
+  }
+
+  /** Wait until the target element is visible */
+  async waitForVisible(element: Locator, timeout?: number): Promise<void> {
+    await element.waitFor({ state: 'visible', timeout });
+  }
+
+  /** Wait until the target element is hidden */
+  async waitForHidden(element: Locator, timeout?: number): Promise<void> {
+    await element.waitFor({ state: 'hidden', timeout });
   }
 
   /**

@@ -185,7 +185,6 @@ export async function clickAndNavigate(
   const { timeout = 30000, waitUntil = 'load', ...clickOptions } = options || {};
   
   await Promise.all([
-    page.waitForNavigation({ waitUntil, timeout }),
     page.click(selector, { ...clickOptions, timeout })
   ]);
 }
@@ -313,7 +312,7 @@ export async function pressKey(
 ): Promise<void> {
   const { delay, timeout = 30000 } = options || {};
   
-  await page.keyboard.press(key, { delay, timeout });
+  await page.keyboard.press(key, { delay });
 }
 
 /**
@@ -531,8 +530,12 @@ export async function switchToFrame(
   page: Page,
   selector: string
 ): Promise<Frame | null> {
-  const frame = page.frameLocator(selector);
-  return frame;
+  const iframeHandle = await page.locator(selector).elementHandle();
+  if (!iframeHandle) {
+    return null;
+  }
+
+  return await iframeHandle.contentFrame();
 }
 
 /**
@@ -548,7 +551,16 @@ export async function performInFrame<T>(
   frameSelector: string,
   action: (frame: Frame) => Promise<T>
 ): Promise<T> {
-  const frame = page.frameLocator(frameSelector);
+  const iframeHandle = await page.locator(frameSelector).elementHandle();
+  if (!iframeHandle) {
+    throw new Error(`Iframe not found for selector: ${frameSelector}`);
+  }
+
+  const frame = await iframeHandle.contentFrame();
+  if (!frame) {
+    throw new Error(`Unable to switch to frame for selector: ${frameSelector}`);
+  }
+
   return await action(frame);
 }
 

@@ -33,12 +33,12 @@ export async function selfHeal(
   timeout = 3_000,
 ): Promise<Locator> {
   for (const strategy of strategies) {
-    try {
+    try{
       const locator = strategy.locate(page);
       await locator.first().waitFor({ state: 'visible', timeout });
       // Strategy succeeded — return this locator
       return locator;
-    } catch {
+    }catch {
       // Strategy failed; fall through to the next one
       console.warn(`[SelfHeal] Strategy "${strategy.name}" failed — trying next.`);
     }
@@ -78,7 +78,7 @@ export function buildStrategies(hints: StrategyHints): LocatorStrategy[] {
   const strategies: LocatorStrategy[] = [];
 
   // 1. data-testid (most stable, CI-friendly)
-  if (hints.testId) {
+  if(hints.testId){
     strategies.push({
       name: `data-testid="${hints.testId}"`,
       locate: (page) => page.getByTestId(hints.testId!),
@@ -86,7 +86,7 @@ export function buildStrategies(hints: StrategyHints): LocatorStrategy[] {
   }
 
   // 2. ARIA role + accessible name
-  if (hints.role) {
+  if(hints.role) {
     strategies.push({
       name: `role=${hints.role} name="${hints.roleName ?? ''}"`,
       locate: (page) =>

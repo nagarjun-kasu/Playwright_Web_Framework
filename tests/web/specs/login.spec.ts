@@ -57,7 +57,7 @@ test.describe('Login Page Tests', () => {
 
   // ── Negative Tests ──────────────────────────────────
 
-  test.describe('Negative Tests', () => {
+  test.describe('Negative Tests @sanity', () => {
 
     test('should show error for invalid username', async ({ loginPage }) => {
       // Negative: Wrong username
