@@ -1,2 +1,0 @@
-[SelfHeal] Strategy "role=button name="Bag"" failed — trying next.
-[SelfHeal] Strategy "role=link name="Bag"" failed — trying next.
