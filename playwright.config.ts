@@ -38,15 +38,17 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
-// Load environment-specific .env file if available. Set TEST_ENV to one of: qa, uat, prod
-const targetEnv = process.env.TEST_ENV || 'qa';
-const dotenvPath = `.env.${targetEnv}`;
-  
 import dotenv from 'dotenv';
-dotenv.config({ path: dotenvPath });
+
+// Load environment-specific .env file if available. Defaults to qa unless a different env is explicitly provided.
+const targetEnv = process.env.TEST_ENV ?? process.env.PLAYWRIGHT_ENV ?? 'qa';
+process.env.TEST_ENV = targetEnv;
+
+dotenv.config({ path: `.env.${targetEnv}`, override: true });
 
 // Ensure BASE_URL is available to tests via process.env.BASE_URL — provide sensible fallback
 process.env.BASE_URL = process.env.BASE_URL ?? 'https://www.myntra.com/';
+process.env.API_BASE_URL = process.env.API_BASE_URL ?? 'https://restful-booker.herokuapp.com';
 
 export default defineConfig({
 
@@ -83,7 +85,7 @@ export default defineConfig({
   // ── Shared Settings for All Projects ──────────────────
   use: {
     // Application under test - picked from .env based on TEST_ENV
-    baseURL: process.env.BASE_URL,
+    //baseURL: process.env.BASE_URL,
 
     // Auto-waiting timeouts
     actionTimeout: 15_000,
