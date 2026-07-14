@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test-api": "TEST_ENV=\"qa\" npx playwright test --grep \"@api\""
+    "test-api": "set TEST_ENV=qa&& npx playwright test --grep \"@api\""
   },
   "keywords": [],
   "author": "",
