@@ -4,6 +4,7 @@ import { createBooking } from "../utils/api-helpers";
 import { buildBookingPayload } from "../utils/payload-builders";
 import type { CreateBookingResponse } from "../utils/types";
 
+//Create booking tests
 test.describe("CreateBooking — POST /booking @api @createbooking", () => {
   test("should create a booking and return it with an ID", async ({ request }) => {
     // Arrange — build a random booking payload
