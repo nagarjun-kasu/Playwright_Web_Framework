@@ -1,0 +1,16 @@
+Run this on the Docker host to start the Jenkins agent:
+
+docker run -d \
+  --name playwright-agent \
+  --restart unless-stopped \
+  -e JENKINS_URL=http://<jenkins-controller-host>:8080 \
+  -e JENKINS_AGENT_NAME=playwright-agent \
+  -e JENKINS_SECRET=<agent-secret> \
+  -e JENKINS_AGENT_WORKDIR=/home/jenkins/agent \
+  -e CI=true \
+  -e TEST_ENV=qa \
+  playwright-agent:latest
+
+If you build it from the repository root, use:
+
+docker build -f Dockerfile.jenkins -t playwright-agent:latest .

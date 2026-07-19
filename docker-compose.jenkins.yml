@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  jenkins-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: playwright-jenkins-agent
+    restart: unless-stopped
+    environment:
+      JENKINS_URL: http://jenkins:8080
+      JENKINS_AGENT_NAME: playwright-agent
+      JENKINS_SECRET: replace-with-your-agent-secret
+      JENKINS_AGENT_WORKDIR: /home/jenkins/agent
+    stdin_open: true
+    tty: true

@@ -1,0 +1,17 @@
+Name: playwright-agent
+Description: Docker-based Jenkins agent for Playwright tests
+Labels: docker-agent
+Remote root directory: /home/jenkins/agent
+Usage: Only build jobs with label expressions matching this node
+Launch method: Launch agent by connecting it to the controller
+
+Host: <your-jenkins-controller-host>
+Port: 50000
+
+Credentials: Create a Jenkins secret text credential containing the agent secret
+
+Availability: Keep this agent online as much as possible
+
+Optional Node Properties:
+- Environment variable: CI=true
+- Environment variable: TEST_ENV=qa
