@@ -1,7 +1,5 @@
 FROM jenkins/inbound-agent:latest
 
-FROM mcr.microsoft.com/playwright:v1.54.0-noble
-RUN apt-get update && apt-get install -y docker.io && rm -rf /var/lib/apt/lists/*
 
 USER root
 

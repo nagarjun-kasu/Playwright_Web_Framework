@@ -1,10 +1,7 @@
 pipeline {
   agent {
-        docker {
-            image 'mcr.microsoft.com/playwright:v1.54.0-noble'
-            reuseNode true
-        }
-    }
+    label 'docker-agent'
+  }
 
   parameters {
     choice(
@@ -12,10 +9,15 @@ pipeline {
       choices: ['qa', 'staging', 'prod'],
       description: 'Select the target environment for the Playwright tests'
     )
+    booleanParam(
+      name: 'MANUAL_BUILD',
+      defaultValue: false,
+      description: 'Enable this for manual execution of the pipeline.'
+    )
     string(
       name: 'BRANCH_TO_BUILD',
       defaultValue: 'main',
-      description: 'Branch to build. Leave as "main" for webhook-triggered builds or change for manual runs.'
+      description: 'Branch to build when manual execution is requested.'
     )
   }
 
@@ -34,15 +36,22 @@ pipeline {
   }
 
   stages {
-    stage('Determine Branch') {
+    stage('Prepare Build Branch') {
       steps {
         script {
-          env.BUILD_BRANCH = params.BRANCH_TO_BUILD?.trim() ? params.BRANCH_TO_BUILD.trim() : (env.BRANCH_NAME ?: 'main')
-          echo "Building branch: ${env.BUILD_BRANCH}"
+          env.BUILD_BRANCH = params.MANUAL_BUILD ? params.BRANCH_TO_BUILD : (env.BRANCH_NAME ?: 'main')
+          echo "Selected branch: ${env.BUILD_BRANCH}"
         }
       }
     }
+
     stage('Checkout') {
+      when {
+        anyOf {
+          branch 'main'
+          expression { return params.MANUAL_BUILD }
+        }
+      }
       steps {
         script {
           def branchSpec = "refs/heads/${env.BUILD_BRANCH}"
@@ -52,6 +61,12 @@ pipeline {
     }
 
     stage('Install Dependencies') {
+      when {
+        anyOf {
+          branch 'main'
+          expression { return params.MANUAL_BUILD }
+        }
+      }
       steps {
         script {
           if (isUnix()) {
@@ -64,6 +79,12 @@ pipeline {
     }
 
     stage('Install Playwright Browsers') {
+      when {
+        anyOf {
+          branch 'main'
+          expression { return params.MANUAL_BUILD }
+        }
+      }
       steps {
         script {
           if (isUnix()) {
@@ -76,6 +97,12 @@ pipeline {
     }
 
     stage('Run API Tests') {
+      when {
+        anyOf {
+          branch 'main'
+          expression { return params.MANUAL_BUILD }
+        }
+      }
       steps {
         script {
           if (isUnix()) {
