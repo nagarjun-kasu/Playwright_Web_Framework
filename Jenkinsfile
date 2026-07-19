@@ -1,13 +1,21 @@
 pipeline {
   agent {
-    label 'docker-agent'
-  }
+        docker {
+            image 'mcr.microsoft.com/playwright:v1.54.0-noble'
+            reuseNode true
+        }
+    }
 
   parameters {
     choice(
       name: 'TEST_ENV',
       choices: ['qa', 'staging', 'prod'],
       description: 'Select the target environment for the Playwright tests'
+    )
+    string(
+      name: 'BRANCH_TO_BUILD',
+      defaultValue: 'main',
+      description: 'Branch to build. Leave as "main" for webhook-triggered builds or change for manual runs.'
     )
   }
 
@@ -26,9 +34,20 @@ pipeline {
   }
 
   stages {
+    stage('Determine Branch') {
+      steps {
+        script {
+          env.BUILD_BRANCH = params.BRANCH_TO_BUILD?.trim() ? params.BRANCH_TO_BUILD.trim() : (env.BRANCH_NAME ?: 'main')
+          echo "Building branch: ${env.BUILD_BRANCH}"
+        }
+      }
+    }
     stage('Checkout') {
       steps {
-        checkout scm
+        script {
+          def branchSpec = "refs/heads/${env.BUILD_BRANCH}"
+          checkout([$class: 'GitSCM', branches: [[name: branchSpec]], userRemoteConfigs: scm.userRemoteConfigs, extensions: scm.extensions])
+        }
       }
     }
 
@@ -57,9 +76,6 @@ pipeline {
     }
 
     stage('Run API Tests') {
-      when {
-        branch 'main'
-      }
       steps {
         script {
           if (isUnix()) {
